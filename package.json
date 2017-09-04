@@ -10,6 +10,9 @@
   "author": "DarushDev",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.108.0"
+    "aws-sdk": "^2.108.0",
+    "body-parser": "^1.17.2",
+    "cuid": "^1.3.8",
+    "express": "^4.15.4"
   }
 }
