@@ -147,6 +147,28 @@ app.put('/inventory/:itemID', bodyParser.json(), function (req, res, next) {
     })
 });
 
+//delete
+app.delete('/inventory/:itemID', function (req, res, next) {
+   var attributesToDelete;
+
+   attributesToDelete = schema.map(function (anAttribute) {
+       return {Name: anAttribute};
+   });
+
+    attributesToDelete.push({Name: 'created'});
+
+    simpledb.deleteAttributes({
+        DomainName: sdbDomain,
+        ItemName: req.params.itemID,
+        Attributes: attributesToDelete
+    }, function (err) {
+        if(err)
+            next(err);
+        else
+            res.status(200).end();
+    });
+
+});
 
 app.listen(3000, function () {
     console.log('SimpleDB-powered REST server started.');
