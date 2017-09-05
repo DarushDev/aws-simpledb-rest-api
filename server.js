@@ -170,6 +170,25 @@ app.delete('/inventory/:itemID', function (req, res, next) {
 
 });
 
+app.get('/inventory', function (req, res, next) {
+   simpledb.select({
+       SelectExpression: 'select * from `sdb-rest-darush` limit 100'
+   }, function (err, awsResp) {
+       var items = [];
+       if (err) {
+           next(err);
+       } else {
+           items = awsResp.Items.map(function (anAwsItem) {
+               var anItem;
+               anItem = attributeValuePairsToAttributeObject(anAwsItem.Attributes);
+               anItem.id = anAwsItem.Name;
+               return anItem;
+           });
+           res.send(items);
+       }
+   });
+});
+
 app.listen(3000, function () {
     console.log('SimpleDB-powered REST server started.');
 });
