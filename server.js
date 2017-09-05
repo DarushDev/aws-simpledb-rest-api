@@ -75,6 +75,36 @@ app.post(
     }
 );
 
+//Read
+app.get('/inventory/:itemID', function (req, res, next) {
+   simpledb.getAttributes({
+       DomainName:sdbDomain,
+       ItemName:req.params.itemID
+   }, function (err, awsResp) {
+       var attributes = {};
+
+       if(err){
+           next(err); // Server error to users
+       } else {
+           awsResp.Attributes.forEach(function (obj) {
+               // if this is the first time we are seeing the aPair.Name, let's add it
+               // to the response object, attributes as an array
+               if(!attributes[obj.Name]){
+                   attributes[obj.Name] = [];
+               }
+               // push the value into the correct array
+               attributes[obj.Name].push(obj.Value);
+           });
+
+           res.send({
+               itemName:req.params.itemID,
+               inventory:attributes
+           });
+       }
+
+   });
+});
+
 
 app.listen(3000, function () {
     console.log('SimpleDB-powered REST server started.');
