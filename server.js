@@ -67,7 +67,7 @@ app.post(
             if (err) {
                 next(err);  //server error to user
             } else {
-                res.send({
+                res.status(201).send({
                     itemName  : newItemName
                 });
             }
@@ -86,20 +86,29 @@ app.get('/inventory/:itemID', function (req, res, next) {
        if(err){
            next(err); // Server error to users
        } else {
-           awsResp.Attributes.forEach(function (obj) {
-               // if this is the first time we are seeing the aPair.Name, let's add it
-               // to the response object, attributes as an array
-               if(!attributes[obj.Name]){
-                   attributes[obj.Name] = [];
-               }
-               // push the value into the correct array
-               attributes[obj.Name].push(obj.Value);
-           });
 
-           res.send({
-               itemName:req.params.itemID,
-               inventory:attributes
-           });
+           if(!awsResp.Attributes){
+               //set the status response to 404 because we didn't find any attributes then end it
+               res.status(404).end();
+           } else {
+
+               awsResp.Attributes.forEach(function (obj) {
+                   // if this is the first time we are seeing the aPair.Name, let's add it
+                   // to the response object, attributes as an array
+                   if(!attributes[obj.Name]){
+                       attributes[obj.Name] = [];
+                   }
+                   // push the value into the correct array
+                   attributes[obj.Name].push(obj.Value);
+               });
+
+               res.send({
+                   itemName:req.params.itemID,
+                   inventory:attributes
+               });
+
+           }
+
        }
 
    });
